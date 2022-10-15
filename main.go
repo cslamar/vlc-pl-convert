@@ -42,14 +42,39 @@ type PlaylistExtension struct {
 }
 
 func main() {
-
-	//testItOut()
 	pl, err := parseFile("test.xspf")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	pl.TrackList = generateNewTrackList(pl.TrackList)
+
+	tids := make([]VlcItem, 0)
+	for i := 0; i < len(pl.TrackList); i++ {
+		tids = append(tids, generateTrackId(i))
+	}
+
+	pl.Extension.TrackIds = tids
+
 	xmlPrint(pl)
+}
+
+func generateNewTrackList(trackList []Track) []Track {
+	newTracks := make([]Track, 0)
+
+	ticks := 0
+
+	for _, track := range trackList {
+		t := track
+		t.TrackExtensions.Id = ticks
+
+		newTracks = append(newTracks, t)
+		newTracks = append(newTracks, generatePauseTrack(2, ticks+1))
+		ticks += 2
+	}
+
+	return newTracks
 }
 
 func parseFile(filename string) (Playlist, error) {
@@ -67,22 +92,22 @@ func parseFile(filename string) (Playlist, error) {
 	return playlist, nil
 }
 
-//func generatePauseTrack(pauseSeconds, trackNumber int) Track {
-//	return Track{
-//		Location: fmt.Sprintf("vlc://pause:%d", pauseSeconds),
-//		Duration: pauseSeconds,
-//		TrackExtensions: VlcId{
-//			Application: "http://www.videolan.org/vlc/playlist/0",
-//			Id:          fmt.Sprint(trackNumber),
-//		},
-//	}
-//}
-//
-//func generateTrackId(trackNumber int) VlcItem {
-//	return VlcItem{
-//		TrackId: fmt.Sprint(trackNumber),
-//	}
-//}
+func generatePauseTrack(pauseSeconds, trackNumber int) Track {
+	return Track{
+		Location: fmt.Sprintf("vlc://pause:%d", pauseSeconds),
+		Duration: pauseSeconds,
+		TrackExtensions: VlcId{
+			Application: "http://www.videolan.org/vlc/playlist/0",
+			Id:          trackNumber,
+		},
+	}
+}
+
+func generateTrackId(trackNumber int) VlcItem {
+	return VlcItem{
+		TrackId: trackNumber,
+	}
+}
 
 func xmlPrint(input any) {
 	output, err := xml.MarshalIndent(input, "", "    ")
