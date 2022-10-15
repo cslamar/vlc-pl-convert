@@ -27,18 +27,17 @@ type Track struct {
 
 type VlcId struct {
 	Application string `xml:"application,attr"`
-	Id          int    `xml:"vlc:id,omitempty"`
+	Id          string `xml:",any"`
 }
 
 type VlcItem struct {
-	XMLName xml.Name `xml:"vlc:item"`
-	Tid     int      `xml:"tid,attr"`
+	TrackId string `xml:",attr,any"`
 }
 
 type Ext struct {
 	XMLName     xml.Name  `xml:"extension"`
 	Application string    `xml:"application,attr"`
-	Tids        []VlcItem `xml:"tids"`
+	TrackIds    []VlcItem `xml:",any"`
 }
 
 func main() {
