@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"flag"
 	"fmt"
 	"os"
 )
@@ -42,7 +43,12 @@ type PlaylistExtension struct {
 }
 
 func main() {
-	pl, err := parseFile("test.xspf")
+	inputFile := flag.String("input", "", "input playlist file")
+	outputFile := flag.String("output", "output.xspf", "output playlist file")
+
+	flag.Parse()
+
+	pl, err := parseFile(*inputFile)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -57,7 +63,7 @@ func main() {
 
 	pl.Extension.TrackIds = tids
 
-	xmlPrint(pl)
+	xmlPrint(pl, *outputFile)
 }
 
 func generateNewTrackList(trackList []Track) []Track {
@@ -109,7 +115,7 @@ func generateTrackId(trackNumber int) VlcItem {
 	}
 }
 
-func xmlPrint(input any) {
+func xmlPrint(input any, dest string) {
 	output, err := xml.MarshalIndent(input, "", "    ")
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -118,4 +124,8 @@ func xmlPrint(input any) {
 	finalOut := []byte(xml.Header + string(output))
 
 	fmt.Println(string(finalOut))
+	if err := os.WriteFile(dest, finalOut, 0644); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
