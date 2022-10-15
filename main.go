@@ -9,7 +9,7 @@ import (
 type Playlist struct {
 	XMLName   xml.Name          `xml:"playlist"`
 	Ns        string            `xml:"xmlns,attr"`
-	VlcNs     string            `xml:"xmlns:vlc,attr"`
+	VlcNs     string            `xml:"xmlns vlc,attr"`
 	Version   int               `xml:"version,attr"`
 	Title     string            `xml:"title"`
 	TrackList []Track           `xml:"trackList>track"`
@@ -49,9 +49,6 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	//fmt.Println(pl)
-
 	xmlPrint(pl)
 }
 
