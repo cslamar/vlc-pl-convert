@@ -1,0 +1,42 @@
+builds:
+  - id: vlc-pl-convert-linux
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+  - id: vlc-pl-convert-windows
+    goos:
+      - windows
+    goarch:
+      - "386"
+      - amd64
+  - id: vlc-pl-convert-macos
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+archives:
+  -
+    replacements:
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+      - goos: darwin
+        format: zip
+checksum:
+  name_template: 'checksums.txt'
+  disable: true
+snapshot:
+  name_template: "{{ incpatch .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
